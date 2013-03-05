@@ -3,6 +3,8 @@
  */
 package dstar;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -26,5 +28,13 @@ public class Game extends JPanel {
                 // Some action
             }
         });
+        
+        setBackground( Color.decode( "0x7DF9FF" ) );
+    }
+    
+    @Override
+    public void paintComponent( Graphics g ) {
+        super.paintComponent( g );
+        level.drawLevel( g );
     }
 }

@@ -4,16 +4,32 @@
  */
 package dstar;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.imageio.ImageIO;
 
 public class Level {
-    public enum Direction { UP, DOWN, LEFT, RIGHT }
+    public static enum Direction { UP, DOWN, LEFT, RIGHT }
+    public static final int WIDTH = 12;
+    public static final int HEIGHT = 9;
     public Cell[][] field;
     
-    public Level() {
-        field = new Cell[9][12];
+    private static Map<String, BufferedImage> images;
+    
+    public Level() throws IOException {
+        field = new Cell[HEIGHT][WIDTH];
+        if ( images == null ) {
+            images = new HashMap<>();
+            for ( String key : new String[] { "brick", "target" } ) {
+                images.put( key, ImageIO.read( new File( key + ".png" ) ) );
+            }
+        }
     }
     
     public Level( String file_name ) throws IOException {
@@ -59,6 +75,14 @@ public class Level {
             line = br.readLine();
         }
         br.close();
+    }
+    
+    /**
+     * Draw the level if it was changed.
+     * @param g 
+     */
+    public void drawLevel( Graphics g ) {
+        g.drawImage( images.get( "brick" ), 0, 0, 32, 32, null);
     }
     
     /**
