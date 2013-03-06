@@ -7,9 +7,9 @@ package dstar;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
@@ -21,19 +21,18 @@ public class Level {
     public static final int CELL_SIZE = 32;
     public String[][] field;
     
-    private static String resources_path;
     private static Map<String, BufferedImage> images;
     
     public Level() throws IOException {
-        resources_path = "resources/";
         field = new String[HEIGHT][WIDTH];
         if ( images == null ) {
             images = new HashMap<>();
             for ( String key : new String[] { 
                 "empty", "brick", "target", "hunter", "swapper" 
             } ) {
-                File file = new File( resources_path + key + ".png" );
-                images.put( key, ImageIO.read( file ) );
+                String relative_path = "resources/" + key + ".png";
+                images.put( key, ImageIO.read(
+                    Level.class.getResourceAsStream( relative_path ) ) );
             }
         }
     }
@@ -48,8 +47,9 @@ public class Level {
      * @param file_name 
      */
     public void loadLevel( String file_name ) throws IOException {
-        FileReader fr = new FileReader( resources_path + file_name );
-        BufferedReader br = new BufferedReader( fr );
+        InputStream is = 
+            Level.class.getResourceAsStream( "resources/" + file_name );
+        BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
         String line = br.readLine();
         
         int cell_pos_x = 0, cell_pos_y = 0;
