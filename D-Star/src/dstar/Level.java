@@ -5,12 +5,14 @@
 package dstar;
 
 import java.awt.Graphics;
+import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
@@ -19,6 +21,10 @@ public class Level {
     public static final int WIDTH = 12;
     public static final int HEIGHT = 9;
     public static final int CELL_SIZE = 32;
+    
+    public int targets;
+    public int hunter_x;
+    public int hunter_y;
     public String[][] field;
     
     private static Map<String, BufferedImage> images;
@@ -63,12 +69,15 @@ public class Level {
                         field[cell_pos_y][cell_pos_x] = "brick";
                         break;
                     case "t":
+                        targets++;
                         field[cell_pos_y][cell_pos_x] = "target";
                         break;
                     case "s":
                         field[cell_pos_y][cell_pos_x] = "swapper";
                         break;
                     case "h":
+                        hunter_x = cell_pos_x;
+                        hunter_y = cell_pos_y;
                         field[cell_pos_y][cell_pos_x] = "hunter";
                         break;
                         
@@ -103,11 +112,74 @@ public class Level {
     
     /**
      * Moves the hunter in the direction dir.
-     * @param dir
+     * @param dir - direction in which hunter should be moved.
      * @return true if hunter was moved
      */
     public boolean moveHunter( Direction dir ) {
-        return false;
+        boolean changed = false;
+        switch ( dir ) {
+            case UP:
+                while ( targets > 0 && hunter_y > 0 &&
+                        field[hunter_y - 1][hunter_x] != "brick" &&
+                        field[hunter_y - 1][hunter_x] != "swapper") {
+                    hunter_y--;
+                    field[hunter_y + 1][hunter_x] = field[hunter_y][hunter_x];
+                    field[hunter_y][hunter_x] = "hunter";
+                    
+                    if ( field[hunter_y + 1][hunter_x] == "target" ) {
+                        targets--;
+                        field[hunter_y + 1][hunter_x] = "empty";
+                    }
+                    changed = true;
+                }
+                break;
+            case DOWN:
+                while ( targets > 0 && hunter_y < HEIGHT &&
+                        field[hunter_y + 1][hunter_x] != "brick" &&
+                        field[hunter_y + 1][hunter_x] != "swapper") {
+                    hunter_y++;
+                    field[hunter_y - 1][hunter_x] = field[hunter_y][hunter_x];
+                    field[hunter_y][hunter_x] = "hunter";
+                    
+                    if ( field[hunter_y - 1][hunter_x] == "target" ) {
+                        targets--;
+                        field[hunter_y - 1][hunter_x] = "empty";
+                    }
+                    changed = true;
+                }
+                break;
+            case LEFT:
+                while ( targets > 0 && hunter_x > 0 &&
+                        field[hunter_y][hunter_x - 1] != "brick" &&
+                        field[hunter_y][hunter_x - 1] != "swapper") {
+                    hunter_x--;
+                    field[hunter_y][hunter_x + 1] = field[hunter_y][hunter_x];
+                    field[hunter_y][hunter_x] = "hunter";
+                    
+                    if ( field[hunter_y][hunter_x + 1] == "target" ) {
+                        targets--;
+                        field[hunter_y][hunter_x + 1] = "empty";
+                    }
+                    changed = true;
+                }
+                break;
+            case RIGHT:
+                while ( targets > 0 && hunter_x < WIDTH &&
+                        field[hunter_y][hunter_x + 1] != "brick" &&
+                        field[hunter_y][hunter_x + 1] != "swapper") {
+                    hunter_x++;
+                    field[hunter_y][hunter_x - 1] = field[hunter_y][hunter_x];
+                    field[hunter_y][hunter_x] = "hunter";
+                    
+                    if ( field[hunter_y][hunter_x - 1] == "target" ) {
+                        targets--;
+                        field[hunter_y][hunter_x - 1] = "empty";
+                    }
+                    changed = true;
+                }
+                break;
+        }
+        return changed;
     }
     
     /**
