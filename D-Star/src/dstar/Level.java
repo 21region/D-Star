@@ -20,14 +20,17 @@ public class Level {
     public static final int HEIGHT = 9;
     public Cell[][] field;
     
+    private static String resources_path;
     private static Map<String, BufferedImage> images;
     
     public Level() throws IOException {
+        resources_path = "resources/";
         field = new Cell[HEIGHT][WIDTH];
         if ( images == null ) {
             images = new HashMap<>();
             for ( String key : new String[] { "brick", "target" } ) {
-                images.put( key, ImageIO.read( new File( key + ".png" ) ) );
+                File file = new File( resources_path + key + ".png" );
+                images.put( key, ImageIO.read( file ) );
             }
         }
     }
@@ -42,7 +45,8 @@ public class Level {
      * @param file_name 
      */
     public void loadLevel( String file_name ) throws IOException {
-        BufferedReader br = new BufferedReader( new FileReader( file_name ) );
+        FileReader fr = new FileReader( resources_path + file_name );
+        BufferedReader br = new BufferedReader( fr );
         String line = br.readLine();
         
         int cell_pos_x = 0, cell_pos_y = 0;
