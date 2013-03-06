@@ -4,6 +4,7 @@
 package dstar;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -30,6 +31,7 @@ public class Game extends JPanel {
         });
         
         setBackground( Color.decode( "0x7DF9FF" ) );
+        setPreferredSize( new Dimension( 374, 278 ) );
     }
     
     @Override

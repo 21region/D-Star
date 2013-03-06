@@ -18,17 +18,20 @@ public class Level {
     public static enum Direction { UP, DOWN, LEFT, RIGHT }
     public static final int WIDTH = 12;
     public static final int HEIGHT = 9;
-    public Cell[][] field;
+    public static final int CELL_SIZE = 32;
+    public String[][] field;
     
     private static String resources_path;
     private static Map<String, BufferedImage> images;
     
     public Level() throws IOException {
         resources_path = "resources/";
-        field = new Cell[HEIGHT][WIDTH];
+        field = new String[HEIGHT][WIDTH];
         if ( images == null ) {
             images = new HashMap<>();
-            for ( String key : new String[] { "brick", "target" } ) {
+            for ( String key : new String[] { 
+                "empty", "brick", "target", "hunter", "swapper" 
+            } ) {
                 File file = new File( resources_path + key + ".png" );
                 images.put( key, ImageIO.read( file ) );
             }
@@ -54,19 +57,19 @@ public class Level {
             for ( String cell_type : line.split( "\\s+" ) ) {
                 switch ( cell_type ) {
                     case "e":
-                        field[cell_pos_y][cell_pos_x] = new Cell( "empty" );
+                        field[cell_pos_y][cell_pos_x] = "empty";
                         break;
                     case "b":
-                        field[cell_pos_y][cell_pos_x] = new Cell( "brick" );
+                        field[cell_pos_y][cell_pos_x] = "brick";
                         break;
                     case "t":
-                        field[cell_pos_y][cell_pos_x] = new Cell( "target" );
+                        field[cell_pos_y][cell_pos_x] = "target";
                         break;
                     case "s":
-                        field[cell_pos_y][cell_pos_x] = new Cell( "swapper" );
+                        field[cell_pos_y][cell_pos_x] = "swapper";
                         break;
                     case "h":
-                        field[cell_pos_y][cell_pos_x] = new Cell( "hunter" );
+                        field[cell_pos_y][cell_pos_x] = "hunter";
                         break;
                         
                     default:
@@ -86,7 +89,16 @@ public class Level {
      * @param g 
      */
     public void drawLevel( Graphics g ) {
-        g.drawImage( images.get( "brick" ), 0, 0, 32, 32, null);
+        int x = 0, y = 0;
+        for ( String[] row : field ) {
+            for ( String cell_name : row ) {
+                g.drawImage( images.get( cell_name ),
+                             x, y, CELL_SIZE, CELL_SIZE, null);
+                x += CELL_SIZE;
+            }
+            x = 0;
+            y += CELL_SIZE;
+        }
     }
     
     /**

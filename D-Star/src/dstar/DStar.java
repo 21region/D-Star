@@ -11,8 +11,10 @@ public class DStar {
         Game game = new Game();
         Screen screen = new Screen( game );
         screen.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        screen.setSize( 500, 500 ); // Better set it in game.
         screen.setVisible( true );
         screen.setTitle( "D-Star" );
+        screen.pack();
+        screen.setResizable( false );
+        screen.setLocationRelativeTo( null );
     }
 }
