@@ -5,14 +5,12 @@
 package dstar;
 
 import java.awt.Graphics;
-import java.awt.List;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
@@ -25,6 +23,8 @@ public class Level {
     public int targets;
     public int hunter_x;
     public int hunter_y;
+    public int swapper_x;
+    public int swapper_y;
     public String[][] field;
     
     private static Map<String, BufferedImage> images;
@@ -50,10 +50,10 @@ public class Level {
     
     /**
      * Load the level.
-     * @param file_name 
+     * @param file_name
      */
     public void loadLevel( String file_name ) throws IOException {
-        InputStream is = 
+        InputStream is =
             Level.class.getResourceAsStream( "resources/" + file_name );
         BufferedReader br = new BufferedReader( new InputStreamReader( is ) );
         String line = br.readLine();
@@ -73,6 +73,8 @@ public class Level {
                         field[cell_pos_y][cell_pos_x] = "target";
                         break;
                     case "s":
+                        swapper_x = cell_pos_x;
+                        swapper_y = cell_pos_y;
                         field[cell_pos_y][cell_pos_x] = "swapper";
                         break;
                     case "h":
@@ -120,13 +122,13 @@ public class Level {
         switch ( dir ) {
             case UP:
                 while ( targets > 0 && hunter_y > 0 &&
-                        field[hunter_y - 1][hunter_x] != "brick" &&
-                        field[hunter_y - 1][hunter_x] != "swapper") {
+                        !field[hunter_y - 1][hunter_x].equals( "brick" ) &&
+                        !field[hunter_y - 1][hunter_x].equals( "swapper" ) ) {
                     hunter_y--;
                     field[hunter_y + 1][hunter_x] = field[hunter_y][hunter_x];
                     field[hunter_y][hunter_x] = "hunter";
                     
-                    if ( field[hunter_y + 1][hunter_x] == "target" ) {
+                    if ( field[hunter_y + 1][hunter_x].equals( "target" ) ) {
                         targets--;
                         field[hunter_y + 1][hunter_x] = "empty";
                     }
@@ -134,14 +136,14 @@ public class Level {
                 }
                 break;
             case DOWN:
-                while ( targets > 0 && hunter_y < HEIGHT &&
-                        field[hunter_y + 1][hunter_x] != "brick" &&
-                        field[hunter_y + 1][hunter_x] != "swapper") {
+                while ( targets > 0 && hunter_y < HEIGHT - 1 &&
+                        !field[hunter_y + 1][hunter_x].equals( "brick" ) &&
+                        !field[hunter_y + 1][hunter_x].equals( "swapper" ) ) {
                     hunter_y++;
                     field[hunter_y - 1][hunter_x] = field[hunter_y][hunter_x];
                     field[hunter_y][hunter_x] = "hunter";
                     
-                    if ( field[hunter_y - 1][hunter_x] == "target" ) {
+                    if ( field[hunter_y - 1][hunter_x].equals( "target" ) ) {
                         targets--;
                         field[hunter_y - 1][hunter_x] = "empty";
                     }
@@ -150,13 +152,13 @@ public class Level {
                 break;
             case LEFT:
                 while ( targets > 0 && hunter_x > 0 &&
-                        field[hunter_y][hunter_x - 1] != "brick" &&
-                        field[hunter_y][hunter_x - 1] != "swapper") {
+                        !field[hunter_y][hunter_x - 1].equals( "brick" ) &&
+                        !field[hunter_y][hunter_x - 1].equals( "swapper" ) ) {
                     hunter_x--;
                     field[hunter_y][hunter_x + 1] = field[hunter_y][hunter_x];
                     field[hunter_y][hunter_x] = "hunter";
                     
-                    if ( field[hunter_y][hunter_x + 1] == "target" ) {
+                    if ( field[hunter_y][hunter_x + 1].equals( "target" ) ) {
                         targets--;
                         field[hunter_y][hunter_x + 1] = "empty";
                     }
@@ -164,14 +166,14 @@ public class Level {
                 }
                 break;
             case RIGHT:
-                while ( targets > 0 && hunter_x < WIDTH &&
-                        field[hunter_y][hunter_x + 1] != "brick" &&
-                        field[hunter_y][hunter_x + 1] != "swapper") {
+                while ( targets > 0 && hunter_x < WIDTH - 1 &&
+                        !field[hunter_y][hunter_x + 1].equals( "brick" ) &&
+                        !field[hunter_y][hunter_x + 1].equals( "swapper" ) ) {
                     hunter_x++;
                     field[hunter_y][hunter_x - 1] = field[hunter_y][hunter_x];
                     field[hunter_y][hunter_x] = "hunter";
                     
-                    if ( field[hunter_y][hunter_x - 1] == "target" ) {
+                    if ( field[hunter_y][hunter_x - 1].equals( "target" ) ) {
                         targets--;
                         field[hunter_y][hunter_x - 1] = "empty";
                     }
@@ -179,12 +181,23 @@ public class Level {
                 }
                 break;
         }
+        
         return changed;
     }
     
     /**
-     * Swaps the hunter with the swap_brick.
+     * Swaps the hunter with the swapper.
      */
     public void swapHunter() {
+        field[swapper_y][swapper_x] = "hunter";
+        field[hunter_y][hunter_x] = "swapper";
+        
+        int tmp = swapper_x;
+        swapper_x = hunter_x;
+        hunter_x = tmp;
+        
+        tmp = swapper_y;
+        swapper_y = hunter_y;
+        hunter_y = tmp;
     }
 }

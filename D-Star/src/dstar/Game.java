@@ -5,6 +5,7 @@ package dstar;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -16,28 +17,42 @@ import javax.swing.JPanel;
 public class Game extends JPanel {
     private Level level;
     private int current_level;
+    private boolean game_completed;
     private static String[] level_names;
     private static Map<Integer, Level.Direction> dir;
+    private static LevelGenerator level_generator;
     
     public Game() throws IOException {
         dir = new HashMap<>();
-        dir.put( KeyEvent.VK_UP, Level.Direction.UP);
-        dir.put( KeyEvent.VK_DOWN, Level.Direction.DOWN);
-        dir.put( KeyEvent.VK_LEFT, Level.Direction.LEFT);
-        dir.put( KeyEvent.VK_RIGHT, Level.Direction.RIGHT);
+        dir.put( KeyEvent.VK_UP, Level.Direction.UP );
+        dir.put( KeyEvent.VK_DOWN, Level.Direction.DOWN );
+        dir.put( KeyEvent.VK_LEFT, Level.Direction.LEFT );
+        dir.put( KeyEvent.VK_RIGHT, Level.Direction.RIGHT );
         
-        level_names = new String[1];
+        level_names = new String[2];
         level_names[0] = "level1.txt";
+        level_names[1] = "level2.txt";
         
         current_level = 0;
-        level = new Level( level_names[current_level] );
+        //level = new Level( level_names[current_level] );
+        level_generator = new LevelGenerator();
+        level = level_generator.generate();
         
         addKeyListener( new KeyAdapter() {
             @Override
             public void keyPressed( KeyEvent e ) {
+                System.out.println( dir.get( e.getKeyCode() ) );
                 if ( dir.containsKey( e.getKeyCode() ) &&
-                     level.moveHunter( dir.get( e.getKeyCode() ) ) )
+                     level.moveHunter( dir.get( e.getKeyCode() ) ) 
+                ) {
                     Game.this.repaint();
+                }
+                else if ( e.getKeyCode() == KeyEvent.VK_SPACE ) {
+                    level.swapHunter();
+                    Game.this.repaint();
+                }
+                
+                if ( level.targets == 0 ) levelCompleted();
             }
         });
         
@@ -48,6 +63,29 @@ public class Game extends JPanel {
     @Override
     public void paintComponent( Graphics g ) {
         super.paintComponent( g );
-        level.drawLevel( g );
+        if ( game_completed ) {
+            Font font = new Font( "Cooper black", Font.BOLD, 14 );
+            g.setFont( font );
+            g.drawString( "Game completed!", 130, 130 );
+        } else {
+            level.drawLevel( g );
+        }
+    }
+    
+    /**
+     * This method is called, when user ate all targets.
+     */
+    public void levelCompleted() {
+        current_level++;
+        if ( current_level < level_names.length ) {
+            try {
+                level.loadLevel( level_names[current_level] );
+            } catch ( IOException e ) {
+                System.out.println( e.getMessage() );
+            }
+        } else {
+            game_completed = true;
+        }
+        repaint();
     }
 }
