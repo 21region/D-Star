@@ -34,20 +34,17 @@ public class Game extends JPanel {
         level_names[1] = "level2.txt";
         
         current_level = 0;
-        //level = new Level( level_names[current_level] );
         level_generator = new LevelGenerator();
         level = level_generator.generate();
         
         addKeyListener( new KeyAdapter() {
             @Override
             public void keyPressed( KeyEvent e ) {
-                System.out.println( dir.get( e.getKeyCode() ) );
                 if ( dir.containsKey( e.getKeyCode() ) &&
                      level.moveHunter( dir.get( e.getKeyCode() ) ) 
                 ) {
                     Game.this.repaint();
-                }
-                else if ( e.getKeyCode() == KeyEvent.VK_SPACE ) {
+                } else if ( e.getKeyCode() == KeyEvent.VK_SPACE ) {
                     level.swapHunter();
                     Game.this.repaint();
                 }

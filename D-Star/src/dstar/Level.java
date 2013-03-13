@@ -27,6 +27,7 @@ public class Level {
     public int swapper_y;
     public String[][] field;
     
+    public static Map<Integer, Direction> dir;
     private static Map<String, BufferedImage> images;
     
     public Level() throws IOException {
@@ -41,11 +42,35 @@ public class Level {
                     Level.class.getResourceAsStream( relative_path ) ) );
             }
         }
+        if ( dir == null ) {
+            dir = new HashMap<>();
+            dir.put( 0, Direction.UP );
+            dir.put( 1, Direction.DOWN );
+            dir.put( 2, Direction.LEFT );
+            dir.put( 3, Direction.RIGHT );
+        }
+    }
+    
+    public Level( Level level ) throws IOException {
+        this();
+        targets = level.targets;
+        hunter_x = level.hunter_x;
+        hunter_y = level.hunter_y;
+        swapper_x = level.swapper_x;
+        swapper_y = level.swapper_y;
+        copyField( level );
     }
     
     public Level( String file_name ) throws IOException {
         this();
         loadLevel( file_name );
+    }
+    
+    public void copyField( Level level ) {
+        for ( int i = 0; i < level.field.length; i++ ) {
+            System.arraycopy( level.field[i], 0, 
+                    field[i], 0, level.field[0].length );
+        }
     }
     
     /**
