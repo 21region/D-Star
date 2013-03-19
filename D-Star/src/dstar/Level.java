@@ -146,7 +146,7 @@ public class Level {
         boolean changed = false;
         switch ( dir ) {
             case UP:
-                while ( targets > 0 && hunter_y > 0 &&
+                while ( hunter_y > 0 &&
                         !field[hunter_y - 1][hunter_x].equals( "brick" ) &&
                         !field[hunter_y - 1][hunter_x].equals( "swapper" ) ) {
                     hunter_y--;
@@ -161,7 +161,7 @@ public class Level {
                 }
                 break;
             case DOWN:
-                while ( targets > 0 && hunter_y < HEIGHT - 1 &&
+                while ( hunter_y < HEIGHT - 1 &&
                         !field[hunter_y + 1][hunter_x].equals( "brick" ) &&
                         !field[hunter_y + 1][hunter_x].equals( "swapper" ) ) {
                     hunter_y++;
@@ -176,7 +176,7 @@ public class Level {
                 }
                 break;
             case LEFT:
-                while ( targets > 0 && hunter_x > 0 &&
+                while ( hunter_x > 0 &&
                         !field[hunter_y][hunter_x - 1].equals( "brick" ) &&
                         !field[hunter_y][hunter_x - 1].equals( "swapper" ) ) {
                     hunter_x--;
@@ -191,7 +191,7 @@ public class Level {
                 }
                 break;
             case RIGHT:
-                while ( targets > 0 && hunter_x < WIDTH - 1 &&
+                while ( hunter_x < WIDTH - 1 &&
                         !field[hunter_y][hunter_x + 1].equals( "brick" ) &&
                         !field[hunter_y][hunter_x + 1].equals( "swapper" ) ) {
                     hunter_x++;
