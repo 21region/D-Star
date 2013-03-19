@@ -9,6 +9,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ public class Game extends JPanel {
     private static String[] level_names;
     private static Map<Integer, Level.Direction> dir;
     private static LevelGenerator level_generator;
+    private static long steps;
     private static long start_time;
     
     public Game() throws IOException {
@@ -47,18 +50,57 @@ public class Game extends JPanel {
                 if ( dir.containsKey( e.getKeyCode() ) &&
                      level.moveHunter( dir.get( e.getKeyCode() ) ) 
                 ) {
+                    steps++;
                     Game.this.repaint();
                 } else if ( e.getKeyCode() == KeyEvent.VK_SPACE ) {
+                    steps++;
                     level.swapHunter();
                     Game.this.repaint();
                 }
                 
                 if ( level.targets == 0 ) {
                     long diff = (System.nanoTime() - start_time) / 1000000;
-                    JOptionPane.showMessageDialog(Game.this, diff + " ms.");
+                    JOptionPane.showMessageDialog(Game.this, 
+                            "steps: " + steps + "\n" + diff + " ms.");
                     levelCompleted();
                 }
             }
+        });
+        
+        addMouseListener( new MouseAdapter() {
+            @Override
+            public void mousePressed( MouseEvent e ) {
+                if ( e.getButton() == MouseEvent.BUTTON3 ) {
+                    steps++;
+                    level.swapHunter();
+                    Game.this.repaint();
+                    return;
+                }
+                
+                int x = level.hunter_x * 32 + 16;
+                int y = level.hunter_y * 32 + 16;
+                if ( e.getX() - x > 16 && Math.abs(e.getY() - y) < 16 ) {
+                    if ( level.moveHunter( Level.Direction.RIGHT ) ) {
+                        steps++;
+                        Game.this.repaint();
+                    }
+                } else if ( x - e.getX() > 16 && Math.abs(e.getY() - y) < 16 ) {
+                    if ( level.moveHunter( Level.Direction.LEFT ) ) {
+                        steps++;
+                        Game.this.repaint();
+                    }
+                } else if ( y - e.getY() > 16 && Math.abs(e.getX() - x) < 16 ) {
+                    if ( level.moveHunter( Level.Direction.UP ) ) {
+                        steps++;
+                        Game.this.repaint();
+                    }
+                } else if ( e.getY() - y > 16 && Math.abs(e.getX() - x) < 16 ) {
+                    if ( level.moveHunter( Level.Direction.DOWN ) ) {
+                        steps++;
+                        Game.this.repaint();
+                    }
+                }
+            } 
         });
         
         setBackground( Color.decode( "0x7DF9FF" ) );
@@ -85,6 +127,8 @@ public class Game extends JPanel {
         if ( current_level < 100 ) {
             try {
                 level = level_generator.generate();
+                steps = 0;
+                start_time = System.nanoTime();
                 //level.loadLevel( level_names[current_level] );
             } catch ( IOException e ) {
                 System.out.println( e.getMessage() );
