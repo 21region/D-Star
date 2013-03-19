@@ -100,7 +100,14 @@ public class Game extends JPanel {
                         Game.this.repaint();
                     }
                 }
-            } 
+                
+                if ( level.targets == 0 ) {
+                    long diff = (System.nanoTime() - start_time) / 1000000;
+                    JOptionPane.showMessageDialog(Game.this, 
+                            "steps: " + steps + "\n" + diff + " ms.");
+                    levelCompleted();
+                }
+            }
         });
         
         setBackground( Color.decode( "0x7DF9FF" ) );
