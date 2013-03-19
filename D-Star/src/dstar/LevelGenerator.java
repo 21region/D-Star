@@ -84,22 +84,23 @@ public class LevelGenerator {
         }
         
         int[] res = new int[10];
-        for (int i = 0, j = rnd.nextInt( n.length - 10 ); i < res.length; i++) {
-            res[i] = i + j;
+        for (int i = 0; i < res.length * 7; i += 7) {
+            res[i / 7] = i + rnd.nextInt( i / 7 + 7 );
         }
         boolean done = false;
         while ( !done ) {
             for ( int i = 0; i < res.length; i++ ) {
                 level.field[n[res[i]][0]][n[res[i]][1]] = entities[1];
             }
-            if ( feasible( level, 10 ) ) {
+            /*if ( feasible( level, 10 ) ) {
                 break;
-            }
+            }*/
+            break;
             
-            for ( int i = 0; i < res.length; i++ ) {
+            /*for ( int i = 0; i < res.length; i++ ) {
                 level.field[n[res[i]][0]][n[res[i]][1]] = entities[0];
             }
-            done = getNext( res, 9 * 12 - 8, 10 );
+            done = getNext( res, 9 * 12 - 8, 10 );*/
         } 
                 
         return level;

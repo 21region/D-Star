@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Game extends JPanel {
@@ -21,6 +22,7 @@ public class Game extends JPanel {
     private static String[] level_names;
     private static Map<Integer, Level.Direction> dir;
     private static LevelGenerator level_generator;
+    private static long start_time;
     
     public Game() throws IOException {
         dir = new HashMap<>();
@@ -37,6 +39,8 @@ public class Game extends JPanel {
         level_generator = new LevelGenerator();
         level = level_generator.generate();
         
+        start_time = System.nanoTime();
+        
         addKeyListener( new KeyAdapter() {
             @Override
             public void keyPressed( KeyEvent e ) {
@@ -49,7 +53,11 @@ public class Game extends JPanel {
                     Game.this.repaint();
                 }
                 
-                if ( level.targets == 0 ) levelCompleted();
+                if ( level.targets == 0 ) {
+                    long diff = (System.nanoTime() - start_time) / 1000000;
+                    JOptionPane.showMessageDialog(Game.this, diff + " ms.");
+                    levelCompleted();
+                }
             }
         });
         
@@ -74,9 +82,10 @@ public class Game extends JPanel {
      */
     public void levelCompleted() {
         current_level++;
-        if ( current_level < level_names.length ) {
+        if ( current_level < 100 ) {
             try {
-                level.loadLevel( level_names[current_level] );
+                level = level_generator.generate();
+                //level.loadLevel( level_names[current_level] );
             } catch ( IOException e ) {
                 System.out.println( e.getMessage() );
             }
