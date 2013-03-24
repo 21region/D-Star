@@ -17,8 +17,8 @@ import javax.imageio.ImageIO;
 public class Level {
     public static enum Direction { UP, DOWN, LEFT, RIGHT }
     public static final int WIDTH = 12;
-    public static final int HEIGHT = 9;
-    public static final int CELL_SIZE = 32;
+    public static final int HEIGHT = 10;
+    public static final int CELL_SIZE = 64;
     
     public int targets;
     public int hunter_x;
@@ -146,7 +146,7 @@ public class Level {
         boolean changed = false;
         switch ( dir ) {
             case UP:
-                while ( targets > 0 && hunter_y > 0 &&
+                while ( targets > 0 && hunter_y > 1 &&
                         !field[hunter_y - 1][hunter_x].equals( "brick" ) &&
                         !field[hunter_y - 1][hunter_x].equals( "swapper" ) ) {
                     hunter_y--;

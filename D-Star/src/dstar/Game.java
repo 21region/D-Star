@@ -7,6 +7,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -14,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -58,12 +61,7 @@ public class Game extends JPanel {
                     Game.this.repaint();
                 }
                 
-                if ( level.targets == 0 ) {
-                    long diff = (System.nanoTime() - start_time) / 1000000;
-                    JOptionPane.showMessageDialog(Game.this, 
-                            "steps: " + steps + "\n" + diff + " ms.");
-                    levelCompleted();
-                }
+                levelCompleted();
             }
         });
         
@@ -77,41 +75,96 @@ public class Game extends JPanel {
                     return;
                 }
                 
-                int x = level.hunter_x * 32 + 16;
-                int y = level.hunter_y * 32 + 16;
-                if ( e.getX() - x > 16 && Math.abs(e.getY() - y) < 16 ) {
+                int x = level.hunter_x * 64 + 32;
+                int y = level.hunter_y * 64 + 32;
+                if ( e.getX() - x > 32 && Math.abs(e.getY() - y) < 32 ) {
                     if ( level.moveHunter( Level.Direction.RIGHT ) ) {
                         steps++;
                         Game.this.repaint();
                     }
-                } else if ( x - e.getX() > 16 && Math.abs(e.getY() - y) < 16 ) {
+                } else if ( x - e.getX() > 32 && Math.abs(e.getY() - y) < 32 ) {
                     if ( level.moveHunter( Level.Direction.LEFT ) ) {
                         steps++;
                         Game.this.repaint();
                     }
-                } else if ( y - e.getY() > 16 && Math.abs(e.getX() - x) < 16 ) {
+                } else if ( y - e.getY() > 32 && Math.abs(e.getX() - x) < 32 ) {
                     if ( level.moveHunter( Level.Direction.UP ) ) {
                         steps++;
                         Game.this.repaint();
                     }
-                } else if ( e.getY() - y > 16 && Math.abs(e.getX() - x) < 16 ) {
+                } else if ( e.getY() - y > 32 && Math.abs(e.getX() - x) < 32 ) {
                     if ( level.moveHunter( Level.Direction.DOWN ) ) {
                         steps++;
                         Game.this.repaint();
                     }
                 }
                 
-                if ( level.targets == 0 ) {
-                    long diff = (System.nanoTime() - start_time) / 1000000;
-                    JOptionPane.showMessageDialog(Game.this, 
-                            "steps: " + steps + "\n" + diff + " ms.");
-                    levelCompleted();
-                }
+                levelCompleted();
             }
         });
+        JButton left = new JButton( "←" );
+        left.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                level.moveHunter( Level.Direction.LEFT );
+                steps++;
+                Game.this.repaint();
+                levelCompleted();
+            }
+        });
+        left.setFocusable( false );
+        add( left );
+        JButton right = new JButton( "→" );
+        right.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                level.moveHunter( Level.Direction.RIGHT );
+                steps++;
+                Game.this.repaint();
+                levelCompleted();
+            }
+        });
+        right.setFocusable( false );
+        add( right );
+        JButton up = new JButton( "↑" );
+        up.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                level.moveHunter( Level.Direction.UP );
+                steps++;
+                Game.this.repaint();
+                levelCompleted();
+            }
+        });
+        up.setFocusable( false );
+        add( up );
+        JButton down = new JButton( "↓" );
+        down.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                level.moveHunter( Level.Direction.DOWN );
+                steps++;
+                Game.this.repaint();
+                levelCompleted();
+            }
+        });
+        down.setFocusable( false );
+        add( down );
+        
+        JButton sw = new JButton( "▒Switch" );
+        sw.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent e ) {
+                steps++;
+                level.swapHunter();
+                Game.this.repaint();
+            }
+        });
+        sw.setFocusable( false );
+        add( sw );
         
         setBackground( Color.decode( "0x7DF9FF" ) );
-        setPreferredSize( new Dimension( 374, 278 ) );
+        setPreferredSize( new Dimension( 758, 630 ) );
     }
     
     @Override
@@ -124,25 +177,32 @@ public class Game extends JPanel {
         } else {
             level.drawLevel( g );
         }
+        g.drawLine(0, 63, 767, 63);
     }
     
     /**
      * This method is called, when user ate all targets.
      */
     public void levelCompleted() {
-        current_level++;
-        if ( current_level < 100 ) {
-            try {
-                level = level_generator.generate();
-                steps = 0;
-                start_time = System.nanoTime();
-                //level.loadLevel( level_names[current_level] );
-            } catch ( IOException e ) {
-                System.out.println( e.getMessage() );
+        if ( level.targets == 0 ) {
+            long diff = (System.nanoTime() - start_time) / 1000000;
+            JOptionPane.showMessageDialog(Game.this, 
+                    "steps: " + steps + "\n" + diff + " ms.");
+            
+            current_level++;
+            if ( current_level < 100 ) {
+                try {
+                    level = level_generator.generate();
+                    steps = 0;
+                    start_time = System.nanoTime();
+                    //level.loadLevel( level_names[current_level] );
+                } catch ( IOException e ) {
+                    System.out.println( e.getMessage() );
+                }
+            } else {
+                game_completed = true;
             }
-        } else {
-            game_completed = true;
+            repaint();
         }
-        repaint();
     }
 }

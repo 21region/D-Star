@@ -39,14 +39,14 @@ public class LevelGenerator {
             }
         }
         
-        int row = rnd.nextInt( level.field.length );
+        int row = rnd.nextInt( level.field.length - 1 ) + 1;
         int col = rnd.nextInt( level.field[row].length );
         level.hunter_x = col;
         level.hunter_y = row;
         level.field[row][col] = entities[3];
         
         while ( !level.field[row][col].equals( entities[0] ) ) {
-            row = rnd.nextInt( level.field.length );
+            row = rnd.nextInt( level.field.length - 1) + 1;
             col = rnd.nextInt( level.field[row].length );
         }
         level.swapper_x = col;
@@ -56,7 +56,7 @@ public class LevelGenerator {
         int targets[][] = new int[5][2];
         while ( level.targets != 5 ) {
             while ( !level.field[row][col].equals( entities[0] ) ) {
-                row = rnd.nextInt( level.field.length );
+                row = rnd.nextInt( level.field.length - 1 ) + 1;
                 col = rnd.nextInt( level.field[row].length );
             }
             level.targets++;
@@ -67,7 +67,7 @@ public class LevelGenerator {
         
         int l = 0;
         int[][] n = new int[9 * 12 - 7][2];
-        for ( int i = 0; i < 9; i++ ) {
+        for ( int i = 1; i < 10; i++ ) {
             for ( int j = 0; j < 12; j++ ) {
                 if ( (level.hunter_x != j || level.hunter_y != i) &&
                      (level.swapper_x != j || level.swapper_y != i) &&
