@@ -59,6 +59,8 @@ public class Game extends JPanel {
                     steps++;
                     level.swapHunter();
                     Game.this.repaint();
+                } else if ( e.getKeyCode() == KeyEvent.VK_N ) {
+                    level.targets = 0;
                 }
                 
                 levelCompleted();
